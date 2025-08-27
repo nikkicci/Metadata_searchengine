@@ -1,11 +1,14 @@
+// Ladda miljövariabler från .env-filen
+require('dotenv').config();
+
 import { createConnection } from 'mysql2';
 
 const db = createConnection({
-    host: '5.189.183.23',
-    port: 4567,
-    user: 'dm24-hbg-grupp3',
-    password: 'LRGUB58269',
-    database: 'dm24-hbg-grupp3'
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 // Lista med böcker
