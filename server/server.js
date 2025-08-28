@@ -27,10 +27,12 @@ app.listen(3000, () =>
 const db = await mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-  password: process.env.DB_PASS,
+  password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT
 });
+
+
 
 // Helper function to run a SQL query with optional values
 // Returns the result rows from the database
@@ -68,3 +70,6 @@ app.get('/api/people/:searchTerm', async (request, response) => {
   // Send the result as a JSON response
   response.json(result);
 });
+
+
+export default db;
