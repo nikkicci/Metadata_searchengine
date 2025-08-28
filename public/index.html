@@ -2,13 +2,13 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Skånes böcker – Sökmotor</title>
+  <title>BläddraNinja - sökmotor</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>📚 Skånes böcker</h1>
-    <img src="/images/owl-reading.jpg" alt="Uggla som läser" class="owl" />
+    <h1>📚 BläddraNinja </h1>
+    <img src="/images/ninja.jpg" alt="Ninja som håller i böcker" class="ninja" />
  
     <div class="search-box">
       <input
@@ -16,12 +16,14 @@
         id="searchInput"
         placeholder="Sök efter titel, författare, bibliotek..."
       />
-      <button onclick="search()">🔍 Sök</button>
+      <button onclick="search()">🔍 Sök</button> 
     </div>
- 
+ <!-- sök button ska ha med enter -->
+  
     <div id="results"></div>
   </div>
  
+
   <script>
     async function search() {
       const query = document.getElementById("searchInput").value;
