@@ -3,79 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <title>BläddraNinja - sökmotor</title>
+
+  <!-- Länkar till extern CSS-fil för utseende -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Länkar till extern JavaScript-fil som innehåller söklogik -->
+  <!-- "defer" gör att skriptet laddas först efter att HTML är färdigladdad -->
+  <script src="main.js" defer></script>
 </head>
 <body>
   <div class="container">
-    <h1>📚 BläddraNinja </h1>
-    <!--<img src="/images/ninja.jpg" alt="Ninja som håller i böcker" class="ninja" /> -->
- 
+    <!-- Sidrubrik -->
+    <h1>📚 BläddraNinja</h1>
+
+    <!-- Sökfält och knapp -->
     <div class="search-box">
       <input
         type="text"
         id="searchInput"
         placeholder="Sök efter titel, författare, bibliotek..."
       />
-      <button onclick="search()">🔍 Sök</button> 
+      <button onclick="search()">🔍 Sök</button>
     </div>
- <!-- sök button ska ha med enter -->
-  
+
+    <!-- Här visas sökresultaten -->
     <div id="results"></div>
   </div>
- 
-
-  <script>
-    async function search() {
-      const query = document.getElementById("searchInput").value;
-      try {
-        // Här är ändringen: fullständig URL till backend
-        const res = await fetch(
-          `http://localhost:3000/api/search?q=${encodeURIComponent(query)}`
-        );
-        if (!res.ok) throw new Error(`Serverfel: ${res.status}`);
-        const books = await res.json();
- 
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = "";
- 
-        if (books.length === 0) {
-          resultsDiv.innerHTML = "<p>Inga resultat hittades.</p>";
-          return;
-        }
- 
-        books.forEach((book) => {
-          const meta = book.description || {};
-          const imageName = book.file_name.replace(/\.[^/.]+$/, ".jpg");
-          const imagePath = `/images/${imageName}`;
- 
-          resultsDiv.innerHTML += `
-            <div class="book">
-              <img
-                src="${imagePath}"
-                alt="Bokomslag"
-                onerror="this.onerror=null;this.src='/images/ingen-bild.jpg';"
-              />
-              <div class="info">
-                <h2>${meta.titel || "Okänd titel"}</h2>
-                <p><strong>Författare:</strong> ${meta.författare || "Okänd"}</p>
-                <p><strong>Format:</strong> ${meta.format || "Okänt format"}</p>
-                <p><strong>Bibliotek:</strong> ${meta.plats || "Ej angiven"}</p>
-                <p><strong>GPS:</strong> ${
-                  meta.gps
-                    ? `Lat: ${meta.gps[0]}, Lng: ${meta.gps[1]}`
-                    : "Ej angiven"
-                }</p>
-              </div>
-            </div>
-          `;
-        });
-      } catch (error) {
-        console.error("Fel vid sökning:", error);
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = `<p>Ett fel uppstod vid sökningen: ${error.message}</p>`;
-      }
-    }
-  </script>
 </body>
 </html>
+
  

@@ -41,8 +41,8 @@ async function query(sql, listOfValues) {
   return result[0]; // result[0] contains the rows
 }
 
-// REST API route: Get all people from the database
-// When a GET request is made to /api/people, return all people as JSON
+// REST API route: Get all books from the database
+// When a GET request is made to /api/books, return all books as JSON
 app.get('/api/books', async (request, response) => {
   // Query the database for all books
   let result = await query(`
@@ -53,22 +53,21 @@ app.get('/api/books', async (request, response) => {
   response.json(result);
 });
 
-// REST API route: Search for books by author or title
-// When a GET request is made to /api/people/:searchTerm, search the database
+// User Story 5:
 app.get('/api/books/:searchTerm', async (request, response) => {
-  // Get the search term from the URL and add % for SQL LIKE (partial match)
-  let searchTerm = `%${request.params.searchTerm}%`;
-  // Query the database for books where author or title matches the search term (case-insensitive)
+  let searchTerm = `%${request.params.searchTerm.toLowerCase()}%`;
+
   let result = await query(`
     SELECT *
     FROM books
     WHERE 
-      LOWER(författare) LIKE LOWER(?) OR
-      LOWER(titel) LIKE LOWER(?)
-  `, [searchTerm, searchTerm, searchTerm]);
-  // Send the result as a JSON response
+      LOWER(filename) LIKE ? OR
+      LOWER(description) LIKE ?
+  `, [searchTerm, searchTerm]);
+
   response.json(result);
 });
+
 
 
 export default db;
