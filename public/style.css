@@ -2,15 +2,22 @@
  
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #003366, #990000); /* blå-röd gradient */
-  color: #fff;
+
+  background: linear-gradient(135deg, rgba(0, 51, 102, 0.7), rgba(153, 0, 0, 0.7)),
+              url('../images/ninja.jpg');
+
+  background-size: cover; /* täcker hela skärmen, beskär vid behov */
+  background-position: top center; /* fokusera på övre delen av bilden */
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* valfritt för "parallax"-känsla */
+  background-blend-mode: overlay;
+
+  color: #ffffff;
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  /* Se till att texten har tillräcklig kontrast */
-  background-color: #003366;
-  color: #ffffff;
 }
+
  
 .container {
   max-width: 900px;

@@ -43,29 +43,28 @@ async function query(sql, listOfValues) {
 
 // REST API route: Get all people from the database
 // When a GET request is made to /api/people, return all people as JSON
-app.get('/api/people', async (request, response) => {
-  // Query the database for all people
+app.get('/api/books', async (request, response) => {
+  // Query the database for all books
   let result = await query(`
     SELECT *
-    FROM people
+    FROM Books
   `);
   // Send the result as a JSON response
   response.json(result);
 });
 
-// REST API route: Search for people by name or hobby
+// REST API route: Search for books by author or title
 // When a GET request is made to /api/people/:searchTerm, search the database
-app.get('/api/people/:searchTerm', async (request, response) => {
+app.get('/api/books/:searchTerm', async (request, response) => {
   // Get the search term from the URL and add % for SQL LIKE (partial match)
   let searchTerm = `%${request.params.searchTerm}%`;
-  // Query the database for people where firstname, lastname, or hobby matches the search term (case-insensitive)
+  // Query the database for books where author or title matches the search term (case-insensitive)
   let result = await query(`
     SELECT *
-    FROM people
+    FROM books
     WHERE 
-      LOWER(firstname) LIKE LOWER(?) OR
-      LOWER(lastname) LIKE LOWER(?) OR
-      LOWER(hobby) LIKE LOWER(?)
+      LOWER(författare) LIKE LOWER(?) OR
+      LOWER(titel) LIKE LOWER(?)
   `, [searchTerm, searchTerm, searchTerm]);
   // Send the result as a JSON response
   response.json(result);
