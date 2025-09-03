@@ -12,13 +12,13 @@ dotenv.config();
 const app = express();
 
 // Serve all static files (HTML, CSS, JS, images) from the 'client' folder
-// This means visiting http://localhost:3000 will show client/index.html
-app.use(express.static('client'));
+// This means visiting http://localhost:4567 will show client/index.html
+app.use(express.static('public'));
 
 // Start the server and listen for requests on port 3000
 // When the server starts, print a message to the terminal
-app.listen(3000, () =>
-  console.log('Listening on http://localhost:3000'));
+app.listen(4567, () =>
+  console.log('Listening on http://localhost:4567'));
 
 // Create a connection to the MySQL database
 // Replace the credentials below with your own database details
@@ -43,7 +43,7 @@ async function query(sql, listOfValues) {
 
 // REST API route: Get all books from the database
 // When a GET request is made to /api/books, return all books as JSON
-app.get('/api/books', async (request, response) => {
+app.get('/api/Books', async (request, response) => {
   // Query the database for all books
   let result = await query(`
     SELECT *
@@ -54,12 +54,12 @@ app.get('/api/books', async (request, response) => {
 });
 
 // User Story 5:
-app.get('/api/books/:searchTerm', async (request, response) => {
+app.get('/api/Books/:searchTerm', async (request, response) => {
   let searchTerm = `%${request.params.searchTerm.toLowerCase()}%`;
 
   let result = await query(`
     SELECT *
-    FROM books
+    FROM Books
     WHERE 
       LOWER(filename) LIKE ? OR
       LOWER(description) LIKE ?

@@ -6,7 +6,7 @@ async function search() {
   const query = document.getElementById("searchInput").value;
   try {
     const res = await fetch(
-      `/api/search?q=${encodeURIComponent(query)}`
+      `http://localhost:4567/api/Books/${encodeURIComponent(query)}`
     );
     if (!res.ok) throw new Error(`Serverfel: ${res.status}`);
     const books = await res.json();
@@ -24,8 +24,8 @@ async function search() {
         ? JSON.parse(book.description)
         : book.description;
 
-      const imageName = book.file_name?.replace(/\.[^/.]+$/, ".jpg") || "ingen-bild.jpg";
-      const imagePath = `/images/${imageName}`;
+      const imageName = book.filename?.replace(/\.[^/.]+$/, ".jpg") || "ingen-bild.jpg";
+      const imagePath = `./images/${imageName}`;
 
       resultsDiv.innerHTML += `
         <div class="book">
@@ -60,7 +60,7 @@ async function search() {
   //const input = document.getElementById("searchInput");
   //input.addEventListener("keydown", function (event) {
    // if (event.key === "Enter") {
-      search();
+      // search();
    // }
 //  });
 //});
