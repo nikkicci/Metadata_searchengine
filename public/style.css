@@ -143,3 +143,24 @@ a:focus {
   background-color: #ffbf47;
   outline: none;
 }
+
+.toggle-btn {
+  margin-top: 1em;
+  background-color: #ffbf47;
+  color: #000;
+  border: none;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover,
+.toggle-btn:focus {
+  background-color: #ffe28a; /* Ljusare för bättre fokusvisning */
+  color: #000;
+  outline: 3px solid #000;   /* Starkare kontrast vid fokus */
+  outline-offset: 2px;
+}
