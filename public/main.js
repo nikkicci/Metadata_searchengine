@@ -2,58 +2,73 @@
 
 // Skript-kod flyttad från index.html samt innehåll för user story 5:
 
-async function search() {
-  const query = document.getElementById("searchInput").value;
+/* ===========================
+   US6 – Textsök + sidfilter
+   =========================== */
+
+// Hämta UI-element (stöder både #searchBtn och äldre #searchButton)
+const elsText = {
+  searchInput: document.getElementById('searchInput'),
+  searchBtn:   document.getElementById('searchBtn') || document.getElementById('searchButton'),
+  pagesOp:     document.getElementById('pagesOp'),
+  pages:       document.getElementById('pages'),
+  results:     document.getElementById('results'), // delas med US7
+};
+
+// Koppla klick på sökknappen -> nya US5-funktionen
+elsText.searchBtn?.addEventListener('click', searchText);
+
+// Backend-anrop till nya US5-endpointen
+async function searchText() {
+  const q       = (elsText.searchInput?.value ?? '').trim();
+  const pages   = (elsText.pages?.value ?? '').trim();
+  const pagesOp = elsText.pagesOp?.value ?? '';
+
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (pages && pagesOp) {
+    params.set('pages', pages);     // heltal
+    params.set('pagesOp', pagesOp); // lt | eq | gt
+  }
+
   try {
-    const res = await fetch(
-      `http://localhost:4567/api/Books/${encodeURIComponent(query)}`
-    );
+    const res = await fetch(`/api/search-text?${params.toString()}`);
     if (!res.ok) throw new Error(`Serverfel: ${res.status}`);
-    const books = await res.json();
-
-    const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "";
-
-    if (books.length === 0) {
-      resultsDiv.innerHTML = "<p>Inga resultat hittades.</p>";
-      return;
-    }
-
-    books.forEach((book) => {
-      const meta = typeof book.description === "string"
-        ? JSON.parse(book.description)
-        : book.description;
-
-      const imageName = book.filename?.replace(/\.[^/.]+$/, ".jpg") || "ingen-bild.jpg";
-      const imagePath = `./images/${imageName}`;
-
-      resultsDiv.innerHTML += `
-        <div class="book">
-          <img
-            src="${imagePath}"
-            alt="Bokomslag"
-            onerror="this.onerror=null;this.src='/images/ingen-bild.jpg';"
-          />
-          <div class="info">
-            <h2>${meta.titel || "Okänd titel"}</h2>
-            <p><strong>Författare:</strong> ${meta.författare || "Okänd"}</p>
-            <p><strong>Format:</strong> ${meta.format || "Okänt format"}</p>
-            <p><strong>Bibliotek:</strong> ${meta.plats || "Ej angiven"}</p>
-            <p><strong>GPS:</strong> ${
-              meta.gps
-                ? `Lat: ${meta.gps[0]}, Lng: ${meta.gps[1]}`
-                : "Ej angiven"
-            }</p>
-          </div>
-        </div>
-      `;
-    });
-  } catch (error) {
-    console.error("Fel vid sökning:", error);
-    const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = `<p>Ett fel uppstod vid sökningen: ${error.message}</p>`;
+    const items = await res.json();
+    renderText(items);
+  } catch (err) {
+    console.error(err);
+    elsText.results.innerHTML = `<div>Ett fel uppstod: ${err.message}</div>`;
   }
 }
+
+// Rendera US5-resultat (utan karta)
+function renderText(items) {
+  elsText.results.innerHTML = '';
+
+  if (!Array.isArray(items) || items.length === 0) {
+    elsText.results.innerHTML = '<div>Inga träffar.</div>';
+    return;
+  }
+
+  for (const it of items) {
+    const title = it.title || it.filename || '(utan titel)';
+    const parts = [];
+    if (it.author) parts.push(`av ${it.author}`);
+    if (Number.isFinite(Number(it.pages))) parts.push(`${it.pages} sidor`);
+
+    const row = document.createElement('div');
+    row.style.margin = '1rem 0';
+    row.innerHTML = `<strong>${title}</strong>${parts.length ? `<div>${parts.join(' — ')}</div>` : ''}`;
+    elsText.results.appendChild(row);
+  }
+}
+
+// Back-compat shim: om något fortfarande kallar `search()`, vidarebefordra till nya US5
+function search() {
+  return searchText();
+}
+
 
 // Bonus: gör så att Enter-knappen triggar sökningen
 //document.addEventListener("DOMContentLoaded", () => {
