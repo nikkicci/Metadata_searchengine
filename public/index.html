@@ -46,6 +46,21 @@
   id="searchInput" → gör det möjligt att hitta sökrutan i koden.
   onclick="search()" → gör att knappen kör search() när man klickar på den. -->
 
+     <!-- US7: Geo-kontroller (läggs under sökfältet) -->
+    <div class="geo-controls" id="us7-controls" style="margin: 0.75rem 0;">
+      <label for="radiusKm">Radie:</label>
+      <select id="radiusKm">
+        <option value="5">5 km</option>
+        <option value="10" selected>10 km</option>
+        <option value="25">25 km</option>
+        <option value="50">50 km</option>
+      </select>
+
+      <button id="useMyLocation" type="button">Använd min position</button>
+      <button id="searchGeoBtn" type="button">Sök böcker nära mig</button>
+      <span id="geoStatus" style="margin-left:.5rem;"></span>
+    </div>
+
     <!-- Här visas sökresultaten -->
     <div id="results"></div>
   </div>
