@@ -96,7 +96,7 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-// === US5: text + sidfilter (lt|eq|gt) ===
+// === US6: text + sidfilter (lt|eq|gt) ===
 app.get('/api/search-text', async (req, res) => {
   try {
     const q = (req.query.q ?? '').trim();

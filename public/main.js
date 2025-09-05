@@ -3,7 +3,7 @@
 // Skript-kod flyttad från index.html samt innehåll för user story 5:
 
 /* ===========================
-   US5 – Textsök + sidfilter
+   US6 – Textsök + sidfilter
    =========================== */
 
 // Hämta UI-element (stöder både #searchBtn och äldre #searchButton)
