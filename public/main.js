@@ -64,3 +64,20 @@ async function search() {
    // }
 //  });
 //});
+
+// Gör så att både Enter och knappen kör samma sökning
+document.addEventListener("DOMContentLoaded", () => {        // När sidan laddas, koppla knappen 
+  const input = document.getElementById("searchInput");
+  const button = document.getElementById("searchButton");
+
+  // Kör sök om man trycker Enter
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      search();
+    }
+  });
+
+  // Kör sök om man trycker på knappen
+  button.addEventListener("click", search);
+});
+
