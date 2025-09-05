@@ -19,35 +19,63 @@ async function search() {
       return;
     }
 
-    books.forEach((book) => {
-      const meta = typeof book.description === "string"
-        ? JSON.parse(book.description)
-        : book.description;
+    books.forEach((book, index) => {
+  const meta = typeof book.description === "string"
+    ? JSON.parse(book.description)
+    : book.description;
 
-      const imageName = book.filename?.replace(/\.[^/.]+$/, ".jpg") || "ingen-bild.jpg";
-      const imagePath = `./images/${imageName}`;
+  const imageName = book.filename?.replace(/\.[^/.]+$/, ".jpg") || "ingen-bild.jpg";
+  const imagePath = `./images/${imageName}`;
 
-      resultsDiv.innerHTML += `
-        <div class="book">
-          <img
-            src="${imagePath}"
-            alt="Bokomslag"
-            onerror="this.onerror=null;this.src='/images/ingen-bild.jpg';"
-          />
-          <div class="info">
-            <h2>${meta.titel || "Okänd titel"}</h2>
-            <p><strong>Författare:</strong> ${meta.författare || "Okänd"}</p>
-            <p><strong>Format:</strong> ${meta.format || "Okänt format"}</p>
-            <p><strong>Bibliotek:</strong> ${meta.plats || "Ej angiven"}</p>
-            <p><strong>GPS:</strong> ${
-              meta.gps
-                ? `Lat: ${meta.gps[0]}, Lng: ${meta.gps[1]}`
-                : "Ej angiven"
-            }</p>
-          </div>
+  const hasGps = Array.isArray(meta.gps) && meta.gps.length === 2;
+  const gpsLink = hasGps
+    ? `<a href="https://www.google.com/maps?q=${meta.gps[0]},${meta.gps[1]}" target="_blank">Visa på karta</a>`
+    : "Ej angiven";
+
+  // Huvudvisning + dolda detaljer
+  const bookHTML = `
+    <div class="book">
+      <img
+        src="${imagePath}"
+        alt="Bokomslag"
+        onerror="this.onerror=null;this.src='/images/ingen-bild.jpg';"
+      />
+      <div class="info">
+        <h2>${meta.titel || "Okänd titel"}</h2>
+        <p><strong>Författare:</strong> ${meta.författare || "Okänd"}</p>
+        <p><strong>Utgivningsår:</strong> ${meta.utgivningsår || "Okänt"}</p>
+        <p><strong>Format:</strong> ${meta.format || "Okänt format"}</p>
+        <p><strong>Bibliotek:</strong> ${meta.plats || "Ej angiven"}</p>
+
+        <button class="toggle-btn" data-index="${index}">▼ Visa mer</button>
+
+        <div class="extra-info" id="extra-${index}" style="display:none; margin-top:1em;">
+          <p><strong>Genre:</strong> ${meta.genre || "Ej angivet"}</p>
+          <p><strong>Språk:</strong> ${meta.språk || "Ej angivet"}</p>
+          <p><strong>ISBN:</strong> ${meta.isbn || "Ej angivet"}</p>
+          <p><strong>Förlag:</strong> ${meta.förlag || "Ej angivet"}</p>
+          <p><strong>Nyckelord:</strong> ${Array.isArray(meta.nyckelord) ? meta.nyckelord.join(", ") : "Ej angivna"}</p>
+          <p><strong>Antal sidor:</strong> ${meta.antal_sidor || "Ej angivet"}</p>
+          <p><strong>GPS:</strong> ${gpsLink}</p>
         </div>
-      `;
-    });
+      </div>
+    </div>
+  `;
+
+  resultsDiv.innerHTML += bookHTML;
+});
+
+// Lägg till toggle-funktion efter rendering
+document.querySelectorAll(".toggle-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    const index = button.getAttribute("data-index");
+    const extraInfo = document.getElementById(`extra-${index}`);
+    const isVisible = extraInfo.style.display === "block";
+    extraInfo.style.display = isVisible ? "none" : "block";
+    button.innerText = isVisible ? "▼ Visa mer" : "▲ Visa mindre";
+  });
+});
+
   } catch (error) {
     console.error("Fel vid sökning:", error);
     const resultsDiv = document.getElementById("results");
