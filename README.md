@@ -1,6 +1,6 @@
 # Metadata_searchengine
 
-# Project Setup Instructions
+## Project Setup Instructions
 
 ## Install dependencies
 
