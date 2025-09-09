@@ -53,20 +53,7 @@ app.get('/api/Books', async (request, response) => {
   response.json(result);
 });
 
-// User Story 5:
-app.get('/api/Books/:searchTerm', async (request, response) => {
-  let searchTerm = `%${request.params.searchTerm.toLowerCase()}%`;
 
-  let result = await query(`
-    SELECT *
-    FROM Books
-    WHERE 
-      LOWER(filename) LIKE ? OR
-      LOWER(description) LIKE ?
-  `, [searchTerm, searchTerm]);
-
-  response.json(result);
-});
 
 // === US7: /api/search — geo-only (kräver geoLat, geoLng, geoRadiusKm) ===
 app.get('/api/search', async (req, res) => {
@@ -108,6 +95,73 @@ app.get('/api/search', async (req, res) => {
     res.status(500).json({ error: 'Serverfel i geo-sökningen' });
   }
 });
+
+// === US6: text + sidfilter (lt|eq|gt) ===
+app.get('/api/search-text', async (req, res) => {
+  try {
+    const q = (req.query.q ?? '').trim();
+
+    const opKey    = req.query.pagesOp; // "lt" | "eq" | "gt"
+    const rawPages = (req.query.pages ?? '').toString().trim();
+    const pagesVal = rawPages === '' ? undefined : Number(rawPages);
+
+    const OPS = { lt: '<', eq: '=', gt: '>' };
+    if (pagesVal !== undefined) {
+      if (!Number.isInteger(pagesVal) || pagesVal < 0) {
+        return res.status(400).json({ error: 'pages måste vara heltal ≥ 0' });
+      }
+      if (!OPS[opKey]) {
+        return res.status(400).json({ error: 'pagesOp måste vara lt, eq eller gt' });
+      }
+    }
+
+    // JSON-fält (sv/eng)
+    const titleExpr = `COALESCE(
+      JSON_UNQUOTE(JSON_EXTRACT(description,'$.title')),
+      JSON_UNQUOTE(JSON_EXTRACT(description,'$.titel'))
+    )`;
+    const authorExpr = `COALESCE(
+      JSON_UNQUOTE(JSON_EXTRACT(description,'$.author')),
+      JSON_UNQUOTE(JSON_EXTRACT(description,'$.författare'))
+    )`;
+    const pagesExpr = `CAST(IFNULL(
+      JSON_UNQUOTE(JSON_EXTRACT(description,'$.pages')),
+      JSON_UNQUOTE(JSON_EXTRACT(description,'$.antal_sidor'))
+    ) AS UNSIGNED)`;
+
+    let sql = `
+      SELECT id, filename,
+             ${titleExpr}  AS title,
+             ${authorExpr} AS author,
+             ${pagesExpr}  AS pages
+      FROM Books
+    `;
+
+    const where  = [];
+    const params = [];
+
+    if (q) {
+      const like = `%${q}%`;
+      where.push(`(${titleExpr} LIKE ? OR ${authorExpr} LIKE ? OR filename LIKE ? OR CAST(description AS CHAR) LIKE ?)`);
+      params.push(like, like, like, like);
+    }
+
+    if (pagesVal !== undefined) {
+      where.push(`${pagesExpr} ${OPS[opKey]} ?`);
+      params.push(pagesVal);
+    }
+
+    if (where.length) sql += ` WHERE ${where.join(' AND ')}`;
+    sql += ` ORDER BY COALESCE(${titleExpr}, filename) ASC LIMIT 100`;
+
+    const rows = await query(sql, params);
+    res.json(rows);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Search failed' });
+  }
+});
+
 
 
 export default db;
