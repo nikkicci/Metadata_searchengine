@@ -133,7 +133,8 @@ app.get('/api/search-text', async (req, res) => {
       SELECT id, filename,
              ${titleExpr}  AS title,
              ${authorExpr} AS author,
-             ${pagesExpr}  AS pages
+             ${pagesExpr}  AS pages,
+             description AS metadata
       FROM Books
     `;
 
