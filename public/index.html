@@ -35,8 +35,19 @@
         type="text"
         id="searchInput"
         placeholder="Sök efter titel, författare, bibliotek..."
-  />
-    <button id="searchButton">🔍 Sök</button>
+        />
+
+  <!-- US6: sidfilter (NYTT) -->
+  <select id="pagesOp" aria-label="Sidfilter">
+    <option value="">sidor…</option>
+    <option value="lt">&lt;</option>
+    <option value="eq">=</option>
+    <option value="gt">&gt;</option>
+  </select>
+
+  <input id="pages" type="number" min="0" step="1" inputmode="numeric" placeholder="antal" style="width:7rem;" />
+
+  <button id="searchButton" type="button">🔍 Sök</button>
 </div>
 
 <!-- Jag ändrade button oneclick itll id searchbutton eftersom 
