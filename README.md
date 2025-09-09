@@ -13,6 +13,7 @@ This will install the following packages:
 express – for setting up the web server
 mysql2 – for connecting to the MySQL database
 dotenv – to load environment variables from a .env file
+```
 
 ## Setup environment variables
 
