@@ -142,9 +142,25 @@ app.get('/api/search-text', async (req, res) => {
     const params = [];
 
     if (q) {
-      const like = `%${q}%`;
-      where.push(`(${titleExpr} LIKE ? OR ${authorExpr} LIKE ? OR filename LIKE ? OR CAST(description AS CHAR) LIKE ?)`);
-      params.push(like, like, like, like);
+      // T.ex. "Emma Dahl, 2021, talbok" varje del delas upp i strängar som vi sedan söker med i varje fält
+      const tokens = q.split(',').map(t => t.trim()).filter(Boolean);
+
+      for (const token of tokens) {
+        const like = `%${token}%`;
+
+        // Varje token måste finnas i något fält (titel, författare, filnamn, metadata)
+        where.push(`
+          (
+            ${titleExpr} LIKE ?
+            OR ${authorExpr} LIKE ?
+            OR filename LIKE ?
+            OR CAST(description AS CHAR) LIKE ?
+          )
+        `);
+
+        // Lägg till samma token fyra gånger (en för varje fält i ovanstående WHERE)
+        params.push(like, like, like, like);
+      }
     }
 
     if (pagesVal !== undefined) {
