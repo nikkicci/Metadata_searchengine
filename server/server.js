@@ -142,7 +142,7 @@ app.get('/api/search-text', async (req, res) => {
     const params = [];
 
     if (q) {
-      // T.ex. "Emma Dahl, 2021, talbok" varje del delas upp i tokens som vi sedan söker med i varje fält
+      // T.ex. "Emma Dahl, 2021, talbok" varje del delas upp i strängar som vi sedan söker med i varje fält
       const tokens = q.split(',').map(t => t.trim()).filter(Boolean);
 
       for (const token of tokens) {
